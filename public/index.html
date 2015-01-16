@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" ng-app="GoogleCalendar" >
+  <head>
+    <meta charset="utf-8">
+    <title>
+      AngularUI Calendar for AngularJS
+    </title>
+    <link rel="stylesheet" href="../bower_components/bootstrap-css/css/bootstrap.css" />
+    <link rel="stylesheet" href="../bower_components/bootstrap-css/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="../bower_components/fullcalendar/dist/fullcalendar.css">
+  </head>
+  <body>
+    <div ng-controller="GoogleCalendarCtrl">
+      <div role="main">
+        <div class="container">
+          <section id="directives-calendar" >
+            <div class="page-header">
+              <h1>
+                Google-Calendar-App
+              </h1>
+              
+            </div>
+            <div ng-show="currentUser">
+              <h3>
+                Welcome {{currentUser.displayName}}
+              </h3>
+            </div>
+            <div>
+              <button class="btn btn-info btn-sm" ng-click="login()" ng-hide="currentUser">
+                Login
+              </button>
+              <h5 ng-show="currentUser">
+                Select Calender From Dropdown
+                <h5>
+                  <select class="btn  btn-sm" name="calendar" ng-model="selectedCalendar" ng-show="currentUser" ng-options="cal.summary for cal in calendars">
+                    select calender
+                  </select>
+                  <button  class="btn btn-info btn-sm" ng-click="loadEvents()" ng-disabled="isProcessing" ng-show="currentUser">
+                    Get Calendar Entries
+                  </button>
+                </div>
+                <br>
+                <br>
+                <div class="well">
+                  <div class="row-fluid">
+                    <div class="span4">
+                      <div class="btn-group calTools">
+                        <br>
+                        <div class="form-group">
+                            <label for="Event">
+                              Today's Date :
+                            </label>
+                            <input type="text" class="form-control"   placeholder={{displayToday|date}} readonly>
+                          </div><br>
+                        <div>
+                          <h3>
+                            Add An Event
+                          </h3>
+                          
+                          <div class="form-group">
+                            <label for="Event">
+                              Date Selected:
+                            </label>
+                            <input type="text" class="form-control"   placeholder={{displayClickDate|date}} readonly>
+                          </div>
+                          <div class="form-group">
+                            <label for="Event">
+                              EventName:
+                            </label>
+                            <input type="text" name="name" class="form-control"  ng-model="newTitle"  placeholder="Enter Event Name" >
+                          </div>
+                          <div class="form-group">
+                            <label for="StartHour">
+                              StartHour:
+                            </label>
+                            <input  class="form-control"  name="StartHour" ng-model="startTimeHours" type="number"  min="0"  max="23" placeholder="HH" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="StartMinute">
+                              StartMinute:
+                            </label>
+                            <input  class="form-control"  type="number"  min="0"  max="59" ng-model="startTimeMinutes"  placeholder="MM" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="EndHour">
+                              EndHour:
+                            </label>
+                            <input  class="form-control" type="number"  min="0"  max="23" ng-model="endTimeHours"   placeholder="HH" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="EndMinute">
+                              EndMinute:
+                            </label>
+                            <input  class="form-control"  type="number"  min="0"  max="59" ng-model="endTimeMinutes"  placeholder="MM" required>
+                          </div>
+                          <button type="button" class="btn btn-primary" ng-click="addEvent()">
+                            Add Event
+                          </button>
+                        </div>
+                      </div>
+                      <script type="text/ng-template" id="myModalContent.html">
+                        <div class="modal-header">
+                          <h3 class="modal-title">Events For Selected Date</h3>
+                      </div>
+                            <div class="modal-body">
+                              <table class="table">
+                                <thead>
+                                  <td>StartTime</td>
+                                  <td>EndTime</td>
+                                  <td>EventName</td>
+                                </thead>
+                                <tr ng-repeat="item in items">
+                                  <td>{{item.startTime|date:'HH:mm'}}</td>
+                                  <td>{{item.endTime|date:'HH:mm'}}</td>
+                                  <td>{{item.title}}</td>
+                                </tr>
+                              </table>
+                        
+                      </div>
+                        <div class="modal-footer">
+                          <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            
+                      </div>
+                      </script>
+                    </div>
+                    <div class="span8">
+                      <div class="alert-success calAlert" ng-show="alertMessage != undefined && alertMessage != ''">
+                        <h4>
+                          {{alertMessage}}
+                        </h4>
+                      </div>
+                      <div class="btn-toolbar">
+                        <p class="pull-right ">
+                          <button type="button" class="btn btn-primary " ng-click="showEvents()">
+                            Show Events
+                          </button>
+                        </p>
+                        <div class="btn-group">
+                          <button class="btn btn-success" ng-click="changeView('agendaDay', 'myCalendar1')">
+                            AgendaDay
+                          </button>
+                          <button class="btn btn-success" ng-click="changeView('agendaWeek', 'myCalendar1')">
+                            AgendaWeek
+                          </button>
+                          <button class="btn btn-success" ng-click="changeView('month', 'myCalendar1')">
+                            Month
+                          </button>
+                        </div>
+                      </div>
+                      <div class="calendar" ng-model="eventSources" calendar="myCalendar1" ui-calendar="uiConfig.calendar">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </section>
+            </div>
+          </div>
+        </div>
+        <script src="../bower_components/jquery/dist/jquery.js">
+        </script>
+        <script src="vendor/angular.js">
+        </script>
+        <script src="../bower_components/bootstrap-css/js/bootstrap.min.js">
+        </script>
+        <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.9.0.js">
+        </script>
+        <script src="../bower_components/moment/moment.js">
+        </script>
+        <script src="../bower_components/fullcalendar/dist/fullcalendar.js">
+        </script>
+        <script src="../src/calendar.js">
+        </script>
+        <script src="src/angular-googleapi.js">
+        </script>
+        <script src="controller/controllers.js">
+        </script>
+        <script src="https://apis.google.com/js/client.js">
+        </script>
+      </body>
+    </html>
